@@ -1,0 +1,146 @@
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gender Predictor</title>
+  <style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: url(mage.jpg) no-repeat center center/cover;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        text-align: center;
+        color: #fff;
+}
+
+    
+
+    h1 {
+      font-size: 5rem;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 15px;
+      font-size: 1.5rem;
+      width: 300px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 6px;
+      margin: 10px 5px;
+      cursor: pointer;
+    }
+
+    #predictBtn {
+      background-color: #fff;
+      color: #0072ff;
+    }
+
+    #clearBtn {
+      background-color: #ff4e50;
+      color: #fff;
+    }
+
+    .result {
+      background-color: #ffffffcc;
+      color: #333;
+      padding: 25px;
+      margin-top: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      font-size: 1.3rem;
+      animation: fadeIn 1s ease-in-out;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .loading {
+      font-size: 2rem;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔍 Gender Predictor</h1>
+
+  <input type="text" id="nameInput" placeholder="Enter a name" />
+  <div>
+    <button id="predictBtn" onclick="predictGender()">Predict</button>
+    <button id="clearBtn" onclick="clearFields()">Clear</button>
+  </div>
+
+  <div id="loading" class="loading" style="display:none;">⏳ Loading...</div>
+
+  <div class="result" id="resultBox">
+    <p id="genderResult"></p>
+    <p id="probabilityResult"></p>
+    <p id="countResult"></p>
+  </div>
+
+  <script>
+    function predictGender() {
+      const name = document.getElementById("nameInput").value.trim();
+      const resultBox = document.getElementById("resultBox");
+      const loading = document.getElementById("loading");
+
+      if (!name) {
+        alert("⚠️ Please enter a name.");
+        return;
+      }
+
+      resultBox.style.display = "none";
+      loading.style.display = "block";
+
+      fetch(`https://api.genderize.io?name=${name}`)
+        .then(response => response.json())
+        .then(data => {
+          loading.style.display = "none";
+
+          if (data.gender) {
+            document.getElementById("genderResult").innerText = `Gender: ${data.gender.toUpperCase()}`;
+            document.getElementById("probabilityResult").innerText = `Probability: ${(data.probability * 100).toFixed(1)}%`;
+            document.getElementById("countResult").innerText = `Based on ${data.count} records`;
+          } else {
+            document.getElementById("genderResult").innerText = `Gender: ❓ Not Found`;
+            document.getElementById("probabilityResult").innerText = '';
+            document.getElementById("countResult").innerText = '';
+          }
+
+          resultBox.style.display = "block";
+        })
+        .catch(error => {
+          loading.style.display = "none";
+          alert("❌ Something went wrong. Try again later.");
+          console.error(error);
+        });
+    }
+
+    function clearFields() {
+      document.getElementById("nameInput").value = "";
+      document.getElementById("resultBox").style.display = "none";
+      document.getElementById("loading").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
+
+```
